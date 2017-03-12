@@ -69,6 +69,7 @@ module.exports.authorize = function (params, options) {
 
 module.exports.refresh = function (oauthToken) {
 	return new Promise(function (resolve, reject) {
+		console.log('Using refresh token: ' + oauthToken.refreshToken);
 		axios.post('https://api.createsend.com/oauth/token?grant_type=refresh_token&refresh_token=' + oauthToken.refreshToken, {}).then(res => {
 			if (res.data.access_token) {
 				resolve({
