@@ -1,0 +1,20 @@
+{
+  "name": "@adonf98/senders-campaign-monitor",
+  "version": "0.0.23",
+  "description": "Search and Get campaign monitor from an email address",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test",
+    "build": "node build && rm senders-lambda.zip; zip -r senders-lambda.zip index.js node_modules scripts www",
+    "deploy": "node deploy.js",
+    "update": "npm update @adonf98/senders-cms-data @adonf98/senders-website-utils angular-expander"
+  },
+  "author": "Antoine Melki",
+  "license": "One More Company",
+  "dependencies": {
+    "axios": "^0.15.3",
+    "bluebird": "^3.4.7",
+    "rxjs": "^5.1.1"
+  },
+  "devDependencies": {}
+}
