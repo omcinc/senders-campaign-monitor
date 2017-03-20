@@ -87,7 +87,7 @@ module.exports.refresh = function (oauthToken) {
 	});
 };
 
-function config(oauthToken) {
+function makeConfig(oauthToken) {
 	return {
 		baseURL: "https://api.createsend.com/api/v3.1",
 		headers: {
@@ -98,7 +98,7 @@ function config(oauthToken) {
 
 module.exports.account = function (oauthToken) {
 	return new Promise(function (resolve, reject) {
-		getClients(config(oauthToken)).subscribe(clients => {
+		getClients(makeConfig(oauthToken)).subscribe(clients => {
 			// Limitation: for now, only get the first client
 			const defaultClient = clients[0];
 			resolve({
@@ -113,7 +113,7 @@ module.exports.account = function (oauthToken) {
 
 module.exports.fetch = function (oauthToken, email) {
 	return new Promise(function (resolve, reject) {
-		const config = config(oauthToken);
+		const config = makeConfig(oauthToken);
 		const getMembershipsFromEmail = function (client) {
 			return getMemberships(config, client, email);
 		};
