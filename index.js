@@ -87,13 +87,18 @@ module.exports.refresh = function (oauthToken) {
 	});
 };
 
+function config(oauthToken) {
+	return {
+		baseURL: "https://api.createsend.com/api/v3.1",
+		headers: {
+			Authorization: ("Bearer " + oauthToken.accessToken)
+		}
+	};
+}
+
 module.exports.account = function (oauthToken) {
 	return new Promise(function (resolve, reject) {
-		axios.defaults.baseURL = "https://api.createsend.com/api/v3.1";
-		axios.defaults.headers = {
-			Authorization: ("Bearer " + oauthToken.accessToken)
-		};
-		getClients().subscribe(clients => {
+		getClients(config(oauthToken)).subscribe(clients => {
 			// Limitation: for now, only get the first client
 			const defaultClient = clients[0];
 			resolve({
@@ -108,19 +113,16 @@ module.exports.account = function (oauthToken) {
 
 module.exports.fetch = function (oauthToken, email) {
 	return new Promise(function (resolve, reject) {
-		axios.defaults.baseURL = "https://api.createsend.com/api/v3.1";
-		axios.defaults.headers = {
-			Authorization: ("Bearer " + oauthToken.accessToken)
-		};
+		const config = config(oauthToken);
 		const getMembershipsFromEmail = function (client) {
-			return getMemberships(client, email);
+			return getMemberships(config, client, email);
 		};
-		getClients()
+		getClients(config)
 			.flatMap(clients => {
 				// Limitation: for now, only get the first client
 				return Rx.Observable.of(clients[0]).flatMap(client => {
 					return Rx.Observable.forkJoin(
-						getLists(client),
+						getLists(config, client),
 						getMembershipsFromEmail(client)
 					);
 				});
@@ -191,15 +193,15 @@ function normalizeError(internalError) {
 	return error;
 }
 
-function getClients() {
-	return Rx.Observable.fromPromise(axios.get('/clients.json')).map(res => res.data);
+function getClients(config) {
+	return Rx.Observable.fromPromise(axios.get('/clients.json', config)).map(res => res.data);
 }
 
-function getLists(client) {
-	return Rx.Observable.fromPromise(axios.get('/clients/' + client.ClientID + '/lists.json')).map(res => res.data);
+function getLists(config, client) {
+	return Rx.Observable.fromPromise(axios.get('/clients/' + client.ClientID + '/lists.json', config)).map(res => res.data);
 }
 
-function getMemberships(client, email) {
-	return Rx.Observable.fromPromise(axios.get('/clients/' + client.ClientID + '/listsforemail.json?email=' + email)).map(res => res.data);
+function getMemberships(config, client, email) {
+	return Rx.Observable.fromPromise(axios.get('/clients/' + client.ClientID + '/listsforemail.json?email=' + email, config)).map(res => res.data);
 }
 
